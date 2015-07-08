@@ -1,0 +1,380 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>VCFtools</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">VCFtools</h1>
+        <p class="header">A set of tools written in Perl and C++ for working with VCF files.</p>
+
+        <ul>
+        	<li><a href="index.html">Home</a></li>
+        	<li><a href="examples.html">Documentation</a></li>
+        	<li class="download"><a class="buttons" href="https://github.com/auton1/vcftools/zipball/master">Download ZIP</a></li>
+         <li class="download"><a class="buttons" href="https://github.com/auton1/vcftools/tarball/master">Download TAR</a></li>
+         <li><a class="buttons github" href="https://github.com/auton1/vcftools">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+	<h2>The bcftools/htslib VCF commands</h2>
+	<p> <a href="https://github.com/samtools/htslib">HTSlib</a> is a C library for
+	high-throughput sequencing data formats. It is designed for speed and works with both VCF and 
+	<a href="http://www.1000genomes.org/wiki/analysis/variant-call-format/bcf-binary-vcf-version-2">BCFv2</a>.
+	</p>
+
+	<h2>Download and installation</h2>
+	<p>
+	The library is hosted on github. It can be downloaded and compiled the usual way.
+	The <span class="cmd">clone</span> command is run only once, the <span class="cmd">pull</span>
+	command is run whenever the latest snapshots from github is needed.
+	Please see the <a href="https://github.com/samtools/bcftools">bcftools github
+	page</a> for the up-to-date version of the clone command. The software is under heavy
+	development and the option <span class="cmd">--branch</span> may be required.
+	</p>
+
+	<p class="codebox">
+   	git clone [<i>--branch=name</i>] git://github.com/samtools/htslib.git htslib
+		<br> git clone git://github.com/samtools/bcftools.git bcftools 
+		<br> cd htslib; git pull; cd ..
+	<br> cd bcftools; git pull; cd ..
+	<br>
+	<br> # Compile
+	<br> cd bcftools; make; make test
+	<br>
+	<br> # Run
+	<br> ./bcftools stats file.vcf.gz
+	<br> 
+	</p>
+	
+	<p>
+	<h2>The tools</h2>
+	<ul>
+		<li> <a href="#call">bcftools call</a>
+		<li> <a href="#filter">bcftools filter</a>
+		<li> <a href="#gtcheck">bcftools gtcheck</a>
+		<li> <a href="#isec">bcftools isec</a>
+		<li> <a href="#merge">bcftools merge</a>
+		<li> <a href="#norm">bcftools norm</a>
+		<li> <a href="#query">bcftools query</a>
+		<li> <a href="#stats">bcftools stats</a>
+		<li> <a href="#subset">bcftools subset</a>
+		<li> <a href="#view">bcftools view</a>
+	</ul></p>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+        jQuery(".usageText").hide();
+        jQuery(".usageToggle").click(function() { jQuery(this).next(".usageText").slideToggle(100); });
+    });
+</script>
+
+<h3><a name="annotate" class="Q">bcftools annotate</a></h3>
+<p> Adds or removes annotations, support for user-written plugins.
+</p>
+<p> Fast alternative to <A href="perl_module.html#vcf-annotate">vcf-annotate</A>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   Annotate and edit VCF/BCF files.
+Usage:   bcftools annotate [options] &lt;in.vcf.gz&gt;
+
+Options:
+   -a, --annotations &lt;file&gt;       VCF file or tabix-indexed file with annotations: CHR\tPOS[\tVALUE]+
+   -c, --columns &lt;list&gt;           list of columns in the annotation file, e.g. CHROM,POS,REF,ALT,-,INFO/TAG. See man page for details
+   -h, --header-lines &lt;file&gt;      lines which should be appended to the VCF header
+   -l, --list-plugins             list available plugins. See BCFTOOLS_PLUGINS environment variable and man page for details
+   -O, --output-type &lt;b|u|z|v&gt;    b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]
+   -p, --plugins &lt;name|...&gt;       comma-separated list of dynamically loaded user-defined plugins. See man page for details
+   -r, --regions &lt;reg|file&gt;       restrict to comma-separated list of regions or regions listed in a file, see man page for details
+   -R, --remove &lt;list&gt;            list of annotations to remove (e.g. ID,INFO/DP,FORMAT/DP,FILTER). See man page for details
+</pre></div>
+
+<h3><a name="call" class="Q">bcftools call</a></h3>
+<p> Formerly known as <span class="cmd">bcftools view</span>, this is the successor of the popular caller from the <span class="cmd">samtools</span> package with extended capabilities. 
+</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   SNP/indel variant calling from VCF/BCF. To be used in conjunction with samtools mpileup.
+         This command replaces the former &quot;bcftools view&quot; caller. Some of the original
+         functionality has been temporarily lost in the process of transition to htslib,
+         but will be added back on popular demand. The original calling model can be
+         invoked with the -c option.
+Usage:   bcftools call [options] &lt;in.vcf.gz&gt;
+
+File format options:
+   -O, --output-type &lt;b|u|z|v&gt;     output type: 'b' compressed BCF; 'u' uncompressed BCF; 'z' compressed VCF; 'v' uncompressed VCF [v]
+   -r, --regions &lt;reg|file&gt;        restrict to comma-separated list of regions or regions listed in a file, see man page for details
+   -s, --samples &lt;list|:file&gt;      sample list, PED file or a file with optional second column for ploidy (0, 1 or 2) [all samples]
+   -t, --targets &lt;reg|file&gt;        similar to -r but streams rather than index-jumps, see man page for details
+
+Input/output options:
+   -A, --keep-alts                 keep all possible alternate alleles at variant sites
+   -M, --keep-masked-ref           keep sites with masked reference allele (REF=N)
+   -S, --skip &lt;snps|indels&gt;        skip indels/snps
+   -v, --variants-only             output variant sites only
+
+Consensus/variant calling options:
+   -c, --consensus-caller          the original calling method (conflicts with -m)
+   -C, --constrain &lt;str&gt;           one of: alleles, trio (see manual)
+   -m, --multiallelic-caller       alternative model for multiallelic and rare-variant calling (conflicts with -c)
+   -n, --novel-rate &lt;float&gt;,[...]  likelihood of novel mutation for constrained trio calling, see man page for details [1e-8,1e-9,1e-9]
+   -p, --pval-threshold &lt;float&gt;    variant if P(ref|D)&lt;FLOAT with -c [0.5] or another allele accepted if P(chi^2)&gt;=1-FLOAT with -m [1e-2]
+   -X, --chromosome-X              haploid output for male samples (requires PED file with -s)
+   -Y, --chromosome-Y              haploid output for males and skips females (requires PED file with -s)
+</pre></div>
+
+<h3><a name="filter" class="Q">bcftools filter</a></h3>
+<p> Powerful fixed-threshold filtering, accepts boolean and arithmetic expressions.
+<br>
+See also the <A href="view">bcftools view</A> below.
+</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   Apply fixed-threshold filters.
+Usage:   bcftools filter [options] &lt;in.vcf.gz&gt;
+
+Options:
+    -e, --exclude &lt;expr&gt;          exclude sites for which the expression is true (e.g. '%TYPE=&quot;snp&quot; &amp;&amp; %QUAL&gt;=10 &amp;&amp; (DP4[2]+DP4[3] &gt; 2')
+    -g, --SnpGap &lt;int&gt;            filter SNPs within &lt;int&gt; base pairs of an indel
+    -G, --IndelGap &lt;int&gt;          filter clusters of indels separated by &lt;int&gt; or fewer base pairs allowing only one to pass
+    -i, --include &lt;expr&gt;          include only sites for which the expression is true
+    -m, --mode &lt;+|x&gt;              &quot;+&quot;: do not replace but add to existing FILTER; &quot;x&quot;: reset filters at sites which pass
+    -O, --output-type &lt;b|u|z|v&gt;   b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]
+    -r, --regions &lt;reg|file&gt;      restrict to comma-separated list of regions or regions listed in a file, see man page for details
+    -s, --soft-filter &lt;string&gt;    annotate FILTER column with &lt;string&gt; or unique filter name (&quot;Filter%d&quot;) made up by the program (&quot;+&quot;)
+    -t, --targets &lt;reg|file&gt;      similar to -r but streams rather than index-jumps, see man page for details
+
+Filter expressions may contain:
+    - arithmetic operators: +,*,-,/
+    - logical operators: &amp;&amp; (same as &amp;), || (same as |)
+    - comparison operators: == (same as =), &gt;, &gt;=, &lt;=, &lt;, !=
+    - parentheses: (, )
+    - array subscripts, such as (e.g. AC[0]&gt;=10)
+    - double quotes for string values (e.g. %FILTER=&quot;PASS&quot;)
+    - 1 (or 0) for testing the presence (or absence) of a flag (e.g. FlagA=1 &amp;&amp; FlagB=0)
+    - TAG or INFO/TAG for INFO values (e.g. DP&lt;800 or INFO/DP&lt;800)
+    - %QUAL, %FILTER, etc. for column names (note: currently only some columns are supported)
+    - %TYPE for variant type, such as %TYPE=&quot;indel&quot;|&quot;snp&quot;|&quot;mnp&quot;|&quot;other&quot;
+    - %FUNC(TAG) where FUNC is one of MAX, MIN, AVG and TAG is one of the FORMAT fields (e.g. %MIN(DV)&gt;5)
+</pre></div>
+
+<h3><a name="gtcheck" class="Q">bcftools gtcheck</a></h3>
+<p> A tool for detecting sample swaps and contamination
+</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   Check sample identity. With no -g BCF given, multi-sample cross-check is performed.
+Usage:   bcftools gtcheck [options] [-g &lt;genotypes.vcf.gz&gt;] &lt;query.vcf.gz&gt;
+
+Options:
+    -a, --all-sites                 output comparison for all sites
+    -g, --genotypes &lt;file&gt;          genotypes to compare against
+    -G, --GTs-only &lt;int&gt;            use GTs, ignore PLs, using &lt;int&gt; for unseen genotypes [99]
+    -H, --homs-only                 homozygous genotypes only (useful for low coverage data)
+    -p, --plot &lt;prefix&gt;             plot
+    -r, --regions &lt;file|reg&gt;        restrict to list of regions or regions listed in a file, see man page for details
+    -s, --query-sample &lt;string&gt;     query sample (by default the first sample is checked)
+    -S, --target-sample &lt;string&gt;    target sample in the -g file (used only for plotting)
+    -t, --targets &lt;reg|file&gt;        similar to -r but streams rather than index-jumps, see man page for details
+</pre></div>
+
+<h3><a name="isec" class="Q">bcftools isec</a></h3>
+<p> Fast alternative to <A href="perl_module.html#vcf-isec">vcf-isec</A>
+</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   Create intersections, unions and complements of VCF files.
+Usage:   bcftools isec [options] &lt;A.vcf.gz&gt; &lt;B.vcf.gz&gt; [...]
+
+Options:
+    -c, --collapse &lt;string&gt;           treat as identical records with &lt;snps|indels|both|all|some|none&gt;, see man page for details [none]
+    -C, --complement                  output positions present only in the first file but missing in the others
+    -f, --apply-filters &lt;list&gt;        require at least one of the listed FILTER strings (e.g. &quot;PASS,.&quot;)
+    -n, --nfiles [+-=]&lt;int&gt;           output positions present in this many (=), this many or more (+), or this many or fewer (-) files
+    -O, --output-type &lt;b|u|z|v&gt;       b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]
+    -p, --prefix &lt;dir&gt;                if given, subset each of the input files accordingly, see also -w
+    -r, --regions &lt;file|reg&gt;          restrict to comma-separated list of regions or regions listed in a file, see man page for details
+    -t, --targets &lt;file|reg&gt;          similar to -r but streams rather than index-jumps, see man page for details
+    -w, --write &lt;list&gt;                list of files to write with -p given as 1-based indexes. By default, all files are written
+
+Examples:
+   # Create intersection and complements of two sets saving the output in dir/*
+   bcftools isec A.vcf.gz B.vcf.gz -p dir
+
+   # Extract and write records from A shared by both A and B using exact allele match
+   bcftools isec A.vcf.gz B.vcf.gz -p dir -n =2 -w 1
+
+   # Extract records private to A or B comparing by position only
+   bcftools isec A.vcf.gz B.vcf.gz -p dir -n -1 -c all
+</pre></div>
+
+<h3><a name="merge" class="Q">bcftools merge</a></h3>
+<p> Fast alternative to <A href="perl_module.html#vcf-merge">vcf-merge</A> with extended capabilities and correct handling of Number=A,G,R INFO fields.
+</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   Merge multiple VCF or BCF files to create one multi-sample file combining compatible records
+         into one according to the -m option.
+Usage:   bcftools merge [options] &lt;A.vcf.gz&gt; &lt;B.vcf.gz&gt; [...]
+
+Options:
+        --use-header &lt;file&gt;            use the provided header
+        --print-header                 print only the merged header and exit
+    -f, --apply-filters &lt;list&gt;         require at least one of the listed FILTER strings (e.g. &quot;PASS,.&quot;)
+    -i, --info-rules &lt;tag:method,..&gt;   rules for merging INFO fields (method is one of sum,avg,min,max,join) or &quot;-&quot; to turn off the default [DP:sum,DP4:sum]
+    -m, --merge &lt;string&gt;               merge sites with differing alleles for &lt;snps|indels|both|all|none&gt;, see man page for details [both]
+    -O, --output-type &lt;b|u|z|v&gt;        'b' compressed BCF; 'u' uncompressed BCF; 'z' compressed VCF; 'v' uncompressed VCF [v]
+    -r, --regions &lt;reg|file&gt;           merge in the given regions only
+</pre></div>
+
+<h3><a name="norm" class="Q">bcftools norm</a></h3>
+<p> Left-align and normalize indels to the shortest possible representation.
+</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   Left-align and normalize indels.
+Usage:   bcftools norm [options] -f &lt;ref.fa&gt; &lt;in.vcf.gz&gt;
+
+Options:
+    -D, --remove-duplicates           remove duplicate lines of the same type. [Todo: merge genotypes, don't just throw away.]
+    -f, --fasta-ref &lt;file&gt;            reference sequence
+    -O, --output-type &lt;type&gt;          'b' compressed BCF; 'u' uncompressed BCF; 'z' compressed VCF; 'v' uncompressed VCF [v]
+    -r, --regions &lt;file|reg&gt;          restrict to comma-separated list of regions or regions listed in a file, see man page for details
+    -w, --win &lt;int,int&gt;               alignment window and buffer window [50,1000]
+</pre></div>
+
+<h3><a name="query" class="Q">bcftools query</a></h3>
+<p> Fast alternative to <A href="perl_module.html#vcf-query">vcf-query</A>
+</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   Extracts fields from VCF/BCF file and prints them in user-defined format
+Usage:   bcftools query [options] &lt;A.vcf.gz&gt; [&lt;B.vcf.gz&gt; [...]]
+
+Options:
+    -a, --annots &lt;list&gt;               alias for -f '%CHROM\t%POS\t%MASK\t%REF\t%ALT\t%TYPE\t' + tab-separated &lt;list&gt; of tags
+    -c, --collapse &lt;string&gt;           collapse lines with duplicate positions for &lt;snps|indels|both|all|some|none&gt;, see man page [none]
+    -f, --format &lt;string&gt;             learn by example, see below
+    -H, --print-header                print header
+    -l, --list-samples                print the list of samples and exit
+    -r, --regions &lt;reg|file&gt;          restrict to comma-separated list of regions or regions listed in a file, see man page for details
+    -t, --targets &lt;reg|file&gt;          similar to -r but streams rather than index-jumps, see man page for details
+    -s, --samples &lt;list|:file&gt;        comma-separated list of samples to include or one name per line in a file
+    -v, --vcf-list &lt;file&gt;             process multiple VCFs listed in the file
+
+Expressions:
+	%CHROM          The CHROM column (similarly also other columns, such as POS, ID, QUAL, etc.)
+	%INFO/TAG       Any tag in the INFO column
+	%TYPE           Variant type (REF, SNP, MNP, INDEL, OTHER)
+	%MASK           Indicates presence of the site in other files (with multiple files)
+	%TAG{INT}       Curly brackets to subscript vectors (0-based)
+	[]              The brackets loop over all samples
+	%GT             Genotype (e.g. 0/1)
+	%TGT            Translated genotype (e.g. C/A)
+	%LINE           Prints the whole line
+	%SAMPLE         Sample name
+
+Examples:
+	bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%SAMPLE=%GT]\n' file.vcf.gz
+</pre></div>
+
+<h3><a name="stats" class="Q">bcftools stats</a></h3>
+<p> Formerly known as <span class="cmd">vcfcheck</span>. Extract stats from a VCF/BCF file or compare two VCF/BCF files. The resulting text file can be plotted using 
+<span class="cmd">plot-vcfstats</span>.
+</p>
+<p class="codebox">
+bcftools stats file.vcf.gz &gt; file.vchk 
+<br> plot-vcfstats file.vchk -p plots/</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   Parses VCF or BCF and produces stats which can be plotted using plot-vcfstats.
+         When two files are given, the program generates separate stats for intersection
+         and the complements.
+Usage:   bcftools stats [options] &lt;A.vcf.gz&gt; [&lt;B.vcf.gz&gt;]
+
+Options:
+    -1, --1st-allele-only              include only 1st allele at multiallelic sites
+    -c, --collapse &lt;string&gt;            treat as identical records with &lt;snps|indels|both|all|some|none&gt;, see man page for details [none]
+    -d, --depth &lt;int,int,int&gt;          depth distribution: min,max,bin size [0,500,1]
+        --debug                        produce verbose per-site and per-sample output
+    -e, --exons &lt;file.gz&gt;              tab-delimited file with exons for indel frameshifts (chr,from,to; 1-based, inclusive, bgzip compressed)
+    -f, --apply-filters &lt;list&gt;         require at least one of the listed FILTER strings (e.g. &quot;PASS,.&quot;)
+    -F, --fasta-ref &lt;file&gt;             faidx indexed reference sequence file to determine INDEL context
+    -i, --split-by-ID                  collect stats for sites with ID separately (known vs novel)
+    -r, --regions &lt;reg|file&gt;           restrict to comma-separated list of regions or regions listed in a file, see man page for details
+    -s, --samples &lt;list|:file&gt;         produce sample stats, &quot;-&quot; to include all samples
+    -t, --targets &lt;reg|file&gt;           similar to -r but streams rather than index-jumps, see man page for details
+    -u, --user-tstv &lt;TAG[:min:max:n]&gt;  collect Ts/Tv stats for any tag using the given binning [0:1,100]
+</pre></div>
+
+<h3><a name="view" class="Q">bcftools view</a></h3>
+<p> This versatile tool can be used for subsetting by sample, position and even flexible fixed-threshold filtering.
+</p>
+<div class="usageBox"><span class="usageToggle">(Read more)</span><pre class="usageText">
+About:   VCF/BCF conversion, view, subset and filter VCF/BCF files.
+Usage:   bcftools view [options] &lt;in.vcf.gz&gt; [region1 [...]]
+
+Output options:
+    -G,   --drop-genotypes              drop individual genotype information (after subsetting if -s option set)
+    -h/H, --header-only/--no-header     print the header only/suppress the header in VCF output
+    -l,   --compression-level [0-9]     compression level: 0 uncompressed, 1 best speed, 9 best compression [-1]
+    -o,   --output-file &lt;file&gt;          output file name [stdout]
+    -O,   --output-type &lt;b|u|z|v&gt;       b: compressed BCF, u: uncompressed BCF, z: compressed VCF, v: uncompressed VCF [v]
+    -r,   --regions &lt;reg|file&gt;          restrict to comma-separated list of regions or regions in a file, see man page for details
+    -t,   --targets &lt;reg|file&gt;          similar to -r but streams rather than index-jumps, see man page for details
+
+Subset options:
+    -a, --trim-alt-alleles      trim alternate alleles not seen in the subset
+    -I, --no-update             do not (re)calculate INFO fields for the subset (currently INFO/AC and INFO/AN)
+    -s, --samples STR/FILE      list of samples (FILE or comma separated list STR) [null]
+
+Filter options:
+    -c/C, --min-ac/--max-ac &lt;int&gt;[:&lt;type&gt;]      minimum/maximum count for non-reference (nref), 1st alternate (alt1) or minor (minor) alleles [nref]
+    -f,   --apply-filters &lt;list&gt;                require at least one of the listed FILTER strings (e.g. &quot;PASS,.&quot;)
+    -i/e, --include/--exclude &lt;expr&gt;            select/exclude sites for which the expression is true (see below for details)
+    -k/n, --known/--novel                       select known/novel sites only (ID is not/is '.')
+    -m/M, --min-alleles/--max-alleles &lt;int&gt;     minimum/maximum number of alleles listed in REF and ALT (e.g. -m2 -M2 for biallelic sites)
+    -p/P, --phased/--exclude-phased             select/exclude sites where all samples are phased/not all samples are phased
+    -q/Q, --min-af/--max-af &lt;float&gt;[:&lt;type&gt;]    minimum/maximum frequency for non-reference (nref), 1st alternate (alt1) or minor (minor) alleles [nref]
+    -u/U, --uncalled/--exclude-uncalled         select/exclude sites without a called genotype
+    -v/V, --types/--exclude-types &lt;list&gt;        select/exclude comma-separated list of variant types: snps,indels,mnps,other [null]
+    -x/X, --private/--exclude-private           select/exclude sites where the non-reference alleles are exclusive (private) to the subset samples
+
+Filter expressions may contain:
+    - arithmetic operators: +,*,-,/
+    - logical operators: &amp;&amp; (same as &amp;), || (same as |)
+    - comparison operators: == (same as =), &gt;, &gt;=, &lt;=, &lt;, !=
+    - parentheses: (, )
+    - array subscripts, such as (e.g. AC[0]&gt;=10)
+    - double quotes for string values (e.g. %FILTER=&quot;PASS&quot;)
+    - 1 (or 0) for testing the presence (or absence) of a flag (e.g. FlagA=1 &amp;&amp; FlagB=0)
+    - TAG or INFO/TAG for INFO values (e.g. DP&lt;800 or INFO/DP&lt;800)
+    - %QUAL, %FILTER, etc. for column names (note: currently only some columns are supported)
+    - %TYPE for variant type, such as %TYPE=&quot;indel&quot;|&quot;snp&quot;|&quot;mnp&quot;|&quot;other&quot;
+    - %FUNC(TAG) where FUNC is one of MAX, MIN, AVG and TAG is one of the FORMAT fields (e.g. %MIN(DV)&gt;5)
+</pre></div>
+	</pre>
+    </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a></small></p>
+        <p>Copyright 2015 &copy; VCFtools</p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-272183-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
+

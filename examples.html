@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>VCFtools</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">VCFtools</h1>
+        <p class="header">A set of tools written in Perl and C++ for working with VCF files.</p>
+
+        <ul>
+        	<li><a href="index.html">Home</a></li>
+        	<li><a href="examples.html">Documentation</a></li>
+        	<li class="download"><a class="buttons" href="https://github.com/auton1/vcftools/zipball/master">Download ZIP</a></li>
+         <li class="download"><a class="buttons" href="https://github.com/auton1/vcftools/tarball/master">Download TAR</a></li>
+         <li><a class="buttons github" href="https://github.com/auton1/vcftools">View On GitHub</a></li>
+        </ul>
+      </header>
+      <section>
+    	<h2>Getting Started with VCFtools</h2>
+		<p>To download VCFtools, please see the <a href="downloads.html">downloads</a> page.
+		Once downloaded, open a terminal and change the working directory to the file download location.</p>
+		<p>If the program was downloaded as a tarball, it must be uncompressed using the following command (replacing it with current version number):</p>
+		<p class="codebox">tar -xvf vcfools.0.X.XX.tar.gz</p>
+		<p>Certain scripts within VCFtools require that VCF files are compressed by bgzip and indexed by tabix (both tools are part of the tabix package, available for download <a href="https://sourceforge.net/projects/samtools/files/tabix/">here</a>).
+		 Both tools must be in directories that are listed in the PATH environment variable. In addition, to run the VCFtools Perl scripts, the PERL5LIB environment variable must be set to include the Vcf.pm module. This can be achieved as follows:</p>
+		<p class="codebox">export PERL5LIB=/path/to/your/vcftools-directory/perl/</p>
+		<p>The program must now be compiled. Change to the specified target directory.</p>
+		<p class="codebox">cd vcftools/
+		<br>make</p>
+		<p>This will compile both the PERL API and the C++ executable. By default, the compiled programs will now be in the <strong>vcftools/bin/</strong> directory.
+		Some common compiler errors may appear, such as not being able to locate <strong>Vcf.pm</strong> or not being able to locate <strong>zlib</strong>.
+		If these occur, please visit the <a href="http://zlib.net/">zlib page</a> for installation instructions or edit the PERL5LIB variable as explained above.</p>
+
+      	<h2>Binary executable documentation</h2>
+      	<ul>
+        	<li><a href="man_latest.html">Current manual v0.1.13</a>.</li>
+      		<li><a href="documentation.html">Usage examples for binary executable</a>.</li>
+		<li>Old manuals: <a href="man_0112b.html">v0.1.12b</a> <a href="man_0112a.html">v0.1.12a</a></li>
+		</ul>
+      	<h2>PERL module documentation</h2>
+      	<ul>
+        	<li><a href="perl_module.html">Documentation for the PERL module</a>.</li>
+      		<li><a href="perl_examples.html">Usage examples for the PERL API</a>.</li>
+      		</ul>
+      	<!--<h2>HTSlib</h2>
+      		<p>Documentation for the separate HTSlib package is <a href="htslib.html">here</a>.</p>-->
+    </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a></small></p>
+        <p>Copyright 2015 &copy; VCFtools</p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-272183-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
