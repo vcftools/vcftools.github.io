@@ -35,19 +35,29 @@
 		<p class="codebox">tar -xvf vcfools.0.X.XX.tar.gz</p>
 		<p>Certain scripts within VCFtools require that VCF files are compressed by bgzip and indexed by tabix (both tools are part of the tabix package, available for download <a href="https://sourceforge.net/projects/samtools/files/tabix/">here</a>).
 		 Both tools must be in directories that are listed in the PATH environment variable. In addition, to run the VCFtools Perl scripts, the PERL5LIB environment variable must be set to include the Vcf.pm module. This can be achieved as follows:</p>
-		<p class="codebox">export PERL5LIB=/path/to/your/vcftools-directory/perl/</p>
+		<p class="codebox">export PERL5LIB=/path/to/your/vcftools-directory/src/perl/</p>
 		<p>The program must now be compiled. Change to the specified target directory.</p>
 		<p class="codebox">cd vcftools/
-		<br>make</p>
+		<br>./configure		
+		<br>make
+		<br>make install
+		</p>
 		<p>This will compile both the PERL API and the C++ executable. By default, the compiled programs will now be in the <strong>vcftools/bin/</strong> directory.
 		Some common compiler errors may appear, such as not being able to locate <strong>Vcf.pm</strong> or not being able to locate <strong>zlib</strong>.
 		If these occur, please visit the <a href="http://zlib.net/">zlib page</a> for installation instructions or edit the PERL5LIB variable as explained above.</p>
 
+		<p>Alternatively, if you have used git to clone the <strong>latest repository version</strong>, install vcftools with the following set of commands:</p>
+		<p class="codebox">cd vcftools/
+		<br>./autogen.sh
+		<br>./configure		
+		<br>make
+		<br>make install
+		</p>      	
       	<h2>Binary executable documentation</h2>
       	<ul>
-        	<li><a href="man_latest.html">Current manual v0.1.13</a>.</li>
+        	<li><a href="man_latest.html">Current manual v0.1.14</a>.</li>
       		<li><a href="documentation.html">Usage examples for binary executable</a>.</li>
-		<li>Old manuals: <a href="man_0112b.html">v0.1.12b</a> <a href="man_0112a.html">v0.1.12a</a></li>
+		<li>Old manuals: <a href="man_0113.html">v0.1.13</a><a href="man_0112b.html">v0.1.12b</a> <a href="man_0112a.html">v0.1.12a</a></li>
 		</ul>
       	<h2>PERL module documentation</h2>
       	<ul>
