@@ -86,8 +86,8 @@
 		<p>The above example will output the resulting file to screen one line at a time for <strong>quick inspection</strong> of the results.</p>
 		<p class="codebox">./vcftools --vcf input_data.vcf --chr 1 --from-bp 1000000 --to-bp 2000000 --recode -c > /home/usr/data/subset.vcf</p>
 		<p>The above example will redirect the output and <strong>write</strong> it to the specified file name.</p>
-		<p class="codebox">./vcftools --vcf input_data.vcf --chr 1 --from-bp 1000000 --to-bp 2000000 --recode -c | gzip -c > /home/usr/data/subset.vcf.gz</p>
-		<p>The above example will redirect the output into <strong>gzip</strong> (assuming it is installed) for <strong>compression</strong>, and then gzip will write the file to the specified destination.</p>
+		<p class="codebox">./vcftools --vcf input_data.vcf --chr 1 --from-bp 1000000 --to-bp 2000000 --recode -c | bgzip -c > /home/usr/data/subset.vcf.gz</p>
+		<p>The above example will redirect the output into <strong>bgzip</strong> (assuming it is installed) for <strong>compression</strong>, and then bgzip will write the file to the specified destination.</p>
 
 		<h2><a name="convertbcf" class="Q">Converting a VCF file to BCF</a></h2>
 		<p>Beginning with VCFftools v0.1.11, the program has the ability to read and write <strong>BCF files</strong>. This means that the program can also convert files between the two formats.
